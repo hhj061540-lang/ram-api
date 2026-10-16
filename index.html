@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAM API</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #101827;
+      color: #f1f5f9;
+      font-family: Arial, sans-serif;
+    }
+
+    .card {
+      width: min(90%, 400px);
+      padding: 32px;
+      text-align: center;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 18px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .ram {
+      margin: 24px 0;
+      font-size: 52px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .status {
+      color: #94a3b8;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 8px;
+      background: #0284c7;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0369a1;
+    }
+
+    a {
+      color: #38bdf8;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>RAM API Dashboard</h1>
+
+    <div class="ram" id="ram">Loading...</div>
+    <p class="status" id="status">Fetching API data...</p>
+
+    <p>
+      Endpoint:
+      <a href="./api/get-ram.json">api/get-ram.json</a>
+    </p>
+
+    <button onclick="loadRam()">Refresh</button>
+  </main>
+
+  <script>
+    async function loadRam() {
+      const ram = document.getElementById("ram");
+      const status = document.getElementById("status");
+
+      ram.textContent = "Loading...";
+      status.textContent = "Fetching API data...";
+
+      try {
+        const response = await fetch("./api/get-ram.json", {
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (typeof data.ram_mb !== "number") {
+          throw new Error("Invalid RAM response");
+        }
+
+        ram.textContent = data.ram_mb + " MB";
+        status.textContent = "API connected successfully";
+      } catch (error) {
+        ram.textContent = "Unavailable";
+        status.textContent = error.message;
+      }
+    }
+
+    loadRam();
+  </script>
+</body>
+</html>
